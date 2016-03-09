@@ -8,7 +8,8 @@ from kanye_display.public.forms import LoginForm
 from kanye_display.user.forms import RegisterForm
 from kanye_display.user.models import User
 from kanye_display.utils import flash_errors
-
+from pymongo import MongoClient
+import json
 blueprint = Blueprint('public', __name__, static_folder='../static')
 
 
@@ -20,18 +21,15 @@ def load_user(user_id):
 
 @blueprint.route('/', methods=['GET', 'POST'])
 def home():
-    """Home page."""
-    form = LoginForm(request.form)
-    # Handle logging in
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            login_user(form.user)
-            flash('You are logged in.', 'success')
-            redirect_url = request.args.get('next') or url_for('user.members')
-            return redirect(redirect_url)
-        else:
-            flash_errors(form)
-    return render_template('public/home.html', form=form)
+    tweets = 1
+    client = MongoClient()
+    x = []
+#    for i in client.crawler3.tweets.find():
+#	x.append(i)
+#   t = len(x)
+    for i in client.crawler3.tweets.find().sort([("date",-1)]).limit(1):
+	x = i
+    return render_template('public/home.html', tweets=x)
 
 
 @blueprint.route('/logout/')
