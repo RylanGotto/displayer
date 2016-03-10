@@ -10,6 +10,7 @@ from kanye_display.user.models import User
 from kanye_display.utils import flash_errors
 from pymongo import MongoClient
 import json
+import random
 blueprint = Blueprint('public', __name__, static_folder='../static')
 
 
@@ -21,15 +22,24 @@ def load_user(user_id):
 
 @blueprint.route('/', methods=['GET', 'POST'])
 def home():
-    tweets = 1
+    tweets = ''
     client = MongoClient()
     x = []
-#    for i in client.crawler3.tweets.find():
-#	x.append(i)
-#   t = len(x)
-    for i in client.crawler3.tweets.find().sort([("date",-1)]).limit(1):
-	x = i
-    return render_template('public/home.html', tweets=x)
+    tones = []
+    tweet = {}    
+    for i in client.crawler3.tweets.find().sort([("date",-1)]).limit(2):
+	ids = []
+	x = []
+	for v in i.get('tone').get('document_tone').get('tone_categories'):
+		scores = []
+		for k, t in enumerate(v.get('tones')):
+		
+			scores.append(t.get('score'))		 
+		ids.append(str(random.randint(0, 15000)) + '-id')	
+		x.append(scores)
+	tones.append({'ids':ids, 'scores':x, 'tweet':i})
+	i.pop('tone')        
+    return render_template('public/home.html', tones=tones)
 
 
 @blueprint.route('/logout/')
