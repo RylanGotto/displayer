@@ -5,25 +5,13 @@
 <div class="body-content">
   <div class="row">
     <div class="col-lg-12">
-<canvas id="myChart"  width="250" height="250"></canvas>
-<canvas id="myChart1" width="250" height="250"></canvas>
-<canvas id="myChart2" width="250" height="250"></canvas>
-<dl>
-{% for i in tones %}
-   {% for x, z in i.iteritems() %}
-   <dt>{{x}}</dt>
-   <dd>{{z}}</dd> 
-   {% endfor %}
-{% endfor %}
 
-</dl>
-    </div>
-  </div>
-</div>
-<script>
-var ctx = $("#myChart").get(0).getContext("2d");
-var ctx1 = $("#myChart").get(0).getContext("2d");
-var ctx2 = $("#myChart").get(0).getContext("2d");
+{% for i in tones %}
+    <canvas id="{{i['ids'][0]}}" width="250" height="250"></canvas>
+    <canvas id="{{i['ids'][1]}}" width="250" height="250"></canvas>
+    <canvas id="{{i['ids'][2]}}" width="250" height="250"></canvas>
+    <script>
+    var context = [$("#" + "{{i['ids'][0]}}").get(0).getContext("2d"), $("#" + "{{i['ids'][1]}}").get(0).getContext("2d"), $("#" + "{{i['ids'][2]}}").get(0).getContext("2d")];
 
 var options = {
     //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
@@ -65,7 +53,7 @@ var data = {
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
-            data: {{tones[0]}}
+            data: {{i['scores'][0]}}
         }
     ]
 };
@@ -79,7 +67,7 @@ var data1 = {
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
-            data: {{tones[1]}}
+            data: {{i['scores'][1]}}
         }
     ]
 };
@@ -93,15 +81,32 @@ var data2 = {
             strokeColor: "rgba(220,220,220,0.8)",
             highlightFill: "rgba(220,220,220,0.75)",
             highlightStroke: "rgba(220,220,220,1)",
-            data: {{tones[2]}}
+            data: {{i['scores'][2]}}
         }
     ]
 };
 
-var myBarChart2 = new Chart(ctx2).Bar(data2, options);
-var myBarChart1 = new Chart(ctx1).Bar(data1, options);
-var myBarChart = new Chart(ctx).Bar(data, options);
+
+
+
+var myBarChart =  new Chart(context[0]).Bar(data, options);
+var myBarChart1 = new Chart(context[1]).Bar(data1, options);
+var myBarChart2 = new Chart(context[2]).Bar(data2, options);
+
 </script>
+   {% for x, z in i.iteritems() %}
+   <dl>
+   <dt>{{x}}</dt>
+   <dd>{{z}}</dd> 
+   </dl>
+   {% endfor %}
+{% endfor %}
+
+
+    </div>
+  </div>
+</div>
+
 
 {% endblock %}
 
